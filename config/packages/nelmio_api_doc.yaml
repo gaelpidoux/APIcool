@@ -1,0 +1,66 @@
+nelmio_api_doc:
+  documentation:
+    servers:
+      - url: http://localhost:8000/
+        description: API over HTTP
+    info:
+      title: APIcool 
+      description: APIcool est en lien avec d'autre outil interne, sont objectif est de retourner des valeurs de l'outil LMD pour pouvoir, par exemple faire un graphique par type.
+      version: 1.0.0
+    paths:
+      /api/login_check:
+        post:
+          operationId: postCredentialsItem
+          tags:
+            - Token
+          summary: Permet d'obtenir le token JWT pour se logger.
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required:
+                    - uuid
+                    - password
+                  properties:
+                    username:
+                      type: string
+                      example: "admin"
+                    password:
+                      type: string
+                      example: "password"
+          responses:
+            "200":
+              description: Récupère le token JWT
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                      refresh_token:
+                        type: string
+                        example: "67abf20ff7833531980b380f08b7e44876857376dd6256d..."
+    components:
+      schemas:
+        User:
+          type: object
+          properties:
+            id:
+              type: integer
+              readOnly: true
+            username:
+              type: string
+      securitySchemes:
+        Bearer:
+          type: http
+          scheme: bearer
+          bearerFormat: JWT
+    security:
+      - Bearer: []
+  areas:
+    path_patterns:
+      - ^/api(?!/doc$)
