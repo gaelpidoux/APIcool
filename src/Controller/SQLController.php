@@ -13,8 +13,7 @@ use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use App\Outil;
-use PDO;
-use PDOException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,6 +53,19 @@ class SQLController extends AbstractController
     * @OA\Parameter(name="ip", in="header", description="Ip du Client", required=true, @OA\Schema(type="string"))
     * @OA\Parameter(name="ttl", in="header", description="TTL si il y en a un", @OA\Schema(type="integer"))
     * @OA\Parameter(name="databaseclient", in="header", description="Nom de la database du Client", required=true, @OA\Schema(type="string"))
+    * @OA\RequestBody(
+    *      description="Example request body",
+    *      required=true,
+    *      @OA\JsonContent(
+    *          type="object",
+    *          @OA\Property(property="login", type="string", description="test"),
+    *          @OA\Property(property="password", type="string", description="Description for property2"),
+    *          @OA\Property(property="port", type="integer", description="Description for property2"),
+    *          @OA\Property(property="ip", type="string", description="Description for property2"),
+    *          @OA\Property(property="ttl", type="integer", description="Description for property3"),
+    *          @OA\Property(property="databaseclient", type="string", description="Description for property3"))
+    *      )
+    * )
     * @OA\Response(response=201, description="'La connexion du client à comme id: +ID du nouveau client",)
     * @OA\Tag(name="CLIENT")
     */
@@ -310,6 +322,7 @@ class SQLController extends AbstractController
     * @OA\Tag(name="Stats")
     */ 
     #[Route('/api/stats/{id}', name:"getStats.sql", methods:["GET"])]
+    #[IsGranted("ROLE_ADMIN", statusCode: 423)]
     public function getStats(int $id, StatsRequestClientRepository $repository, SerializerInterface $serializer): JsonResponse{
         $client = $repository->find($id);
         if (!$client) {

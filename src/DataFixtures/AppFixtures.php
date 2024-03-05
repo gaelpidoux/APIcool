@@ -7,14 +7,13 @@ use App\Entity\DEVCLIENTCFGVERIF;
 use App\Entity\DEVCLIENTPRINCIPALVERIF;
 use App\Entity\RequestClient;
 use App\Entity\StatsRequestClient;
-use App\Repository\StatsRequestClientRepository;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
 use App\Outil;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\TestServiceContainerRealRefPass;
 
 
 class AppFixtures extends Fixture
@@ -38,6 +37,38 @@ private Generator $faker;
     public function load(ObjectManager $manager): void
     { 
       printf("\nFixtures> ");
+      
+      printf("\n USER");
+              //Public
+              $publicUser = new User();
+              $password = $this->faker->password(2,6);
+              $publicUser
+              ->setUsername($this->faker->userName() . "@" . $password)
+              ->setPassword($this->userPasswordHasher->hashPassword($publicUser, $password))
+              ->setRoles(["ROLE_PUBLIC"]);
+              
+              $manager->persist($publicUser);
+      
+              for ($i = 0; $i < 10; $i++) {
+      
+                  $userUser = new User();
+                  $password = $this->faker->password(2,6);
+                  $userUser
+                  ->setUsername($this->faker->userName() . "@" . $password)
+                  ->setPassword($this->userPasswordHasher->hashPassword($userUser, $password))
+                  ->setRoles(["ROLE_USER"]);
+                  
+                  $manager->persist($userUser);
+      
+              }
+      
+              $adminUser = new User();
+              $adminUser
+              ->setUsername("admin")
+              ->setPassword($this->userPasswordHasher->hashPassword($adminUser, "password"))
+              ->setRoles(["ROLE_ADMIN"]);
+              
+              $manager->persist($adminUser);
       
        //GENERATION DES VALEUR DANS DEV_CLIENT...
        $Listnbr = [0,0,0,0,0,0];
