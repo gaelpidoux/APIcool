@@ -11,14 +11,17 @@ nelmio_api_doc:
         Elle sera combinée avec une application mobile et un Grafana.
 
 
-        Pour cette partie, deux points sont importants :
+        Pour cette partie, trois points sont importants :
 
         1. L'API ne stockera pas les connexions client, c'est pourquoi je ne me suis pas embêté
-           à encoder les mots de passe de dataclient (pour les utilisateurs, par contre, oui).
-        2. La partie métier est simplifiée à 1% de ce que je retrouve en réalité. Cela peut donner
-           l'impression que l'API est simpliste, mais j'ai regroupé exprès les vérifications contenues
-           dans la table devclientprincipalverif des données très simples pour des tests.
-        Voilà voilà, enjoy!
+           à encoder les mots de passe de dataclient (car là c'est du test) (pour les utilisateurs, par contre, oui).
+           
+        2. La partie métier est TRES simplifiée. Cela peut donner l'impression que l'API est simpliste, mais j'ai regroupé exprès les vérifications les plus simple dans la table devclientprincipalverif.
+        
+        3. Je n'ai mis qu'un getAllclient avec du cache parce que toutes mes autres tables évoluent constamment et ne sont jamais static (sauf arrêt de la bdd)
+        
+        
+        Voilà voilà, Enjoy!
       version: 1.0.0
     paths:
       /api/login_check:
