@@ -20,20 +20,16 @@ class RequestClient
     private ?DataClient $client = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["getTOUT"])]
-    #[Groups(["getrequest"])]
+    #[Groups(["getrequest","getTOUT"])]
 
     private ?string $type = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["getTOUT"])]
-    #[Groups(["getrequest"])]
-
+    #[Groups(["getrequest","getTOUT"])]
     private ?string $tabledata = null;
 
     #[ORM\Column(length: 24)]
-    #[Groups(["getTOUT"])]
-    #[Groups(["getrequest"])]
+    #[Groups(["getrequest","getTOUT"])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'request', fetch: 'EAGER',cascade: ['persist'])]

@@ -22,6 +22,27 @@ class RequestClientRepository extends ServiceEntityRepository
     }
 
      /**
+     * Recherche les RequestClient en fonction de client
+     *
+     * @param int    $clientId
+     *
+     * @return RequestClient[]|null
+     */
+    public function findByClient(int $clientId): ?array
+    {
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery('
+            SELECT rc
+            FROM App\Entity\RequestClient rc
+            WHERE rc.client = :clientId
+        ')
+            ->setParameter('clientId', $clientId);
+    
+        return $query->getResult();
+    }
+
+     /**
      * Recherche les RequestClient en fonction de l'ID du client et du type.
      *
      * @param int    $clientId
