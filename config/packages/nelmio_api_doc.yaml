@@ -5,7 +5,7 @@ nelmio_api_doc:
         description: API over HTTP
     info:
       title: APIcool 
-      description: APIcool est en lien avec d'autre outil interne, sont objectif est de retourner des valeurs de l'outil LMD pour pouvoir, par exemple faire un graphique par type.
+      description: APIcool est une api qui sera en lien avec d'autre outil interne à l'entreprise SAVOYE, sont objectif est de retourner des valeurs de l'outil LMD depuis une BDD, elle sera combiner avec une application mobile et un grafana.
       version: 1.0.0
     paths:
       /api/login_check:
