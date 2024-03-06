@@ -17,6 +17,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bundle\MakerBundle\Validator;
 use OpenApi\Annotations as OA;
 
 class ClientController extends AbstractController
@@ -59,20 +60,33 @@ class ClientController extends AbstractController
     *          @OA\Property(property="databaseclient", type="string", description="Description for property3"))
     *      )
     * )
-    * @OA\Response(response=201, description="'La connexion du client à comme id: +ID du nouveau client",)
+    * @OA\Response(response=201, description="La connexion du client à comme id: +ID du nouveau client")
+    * @OA\Response(response=500, description="JSON MESSAGE Access denied for user +detail")
+    * @OA\Response(response=400, description="VALIDATOR DETAIL [combinaison existe déjà, element ne peut être null]")
     * @OA\Tag(name="CLIENT")
     */
     #[Route('/api/createclient', name:'sql.createclient', methods:["POST"])]
-    public function CreateConnexionClientsql(Request $request, ValidatorInterface $validator,UrlGeneratorInterface $urlGenerator, SerializerInterface $serializer, EntityManagerInterface $entity): JsonResponse
+    public function CreateConnexionClientsql(Request $request, SerializerInterface $serializer, EntityManagerInterface $entity,ValidatorInterface $validator): JsonResponse
     {
         
         $client = $serializer->deserialize($request->getContent(), DataClient::class,"json");
+
+        
+        $errors = $validator->validate($client);
+        if($errors->count() > 0){
+            return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [],true);
+        }
+
         $client->setStatus('on');
 
         $Outil = new Outil();
         $result = $Outil->TestConnexion($client);
 
         if ($result != null) {
+
+            $date = new \DateTime();            
+            $client->setCreatedAt($date);
+            $client->setUpdatedAt($date); 
             $entity->persist($client);
             $entity->flush();
             echo 'La connexion du client à comme id: ' . $client->getId();
@@ -103,7 +117,7 @@ class ClientController extends AbstractController
 
         $entity->flush();
 
-        return new JsonResponse($client, JsonResponse::HTTP_CREATED, ["Location" => ""],false);
+        return new JsonResponse($client, JsonResponse::HTTP_CREATED);
     }
     /**
     * Cette method permet de changer les information de connexion d'un client <!> Pas de test de connexion ni une mise a jour de request
@@ -114,12 +128,13 @@ class ClientController extends AbstractController
     * @OA\Parameter(name="ip", in="header", description="Ip du Client", @OA\Schema(type="string"))
     * @OA\Parameter(name="ttl", in="header", description="TTL si il y en a un", @OA\Schema(type="integer"))
     * @OA\Parameter(name="databaseclient", in="header", description="Nom de la database du Client", @OA\Schema(type="string"))
-    * @OA\Response(response=200, description="JSON MESSAGE new information OK",)
-    * @OA\Response(response=404, description="JSON ERROR ID not found",)
+    * @OA\Response(response=200, description="JSON MESSAGE new information OK")
+    * @OA\Response(response=404, description="JSON ERROR ID not found")
+    * @OA\Response(response=400, description="VALIDATOR DETAIL [combinaison existe déjà, element ne peut être null]")
     * @OA\Tag(name="CLIENT")
     */ 
     #[Route('/api/client/{id}', name:"updateClient.sql", methods:["PUT"])]
-    public function updateClient(int $id,DataClientRepository $repository, Request $request, SerializerInterface $serializer, EntityManagerInterface $entity): JsonResponse{
+    public function updateClient(int $id,DataClientRepository $repository, Request $request, SerializerInterface $serializer, EntityManagerInterface $entity,ValidatorInterface $validator): JsonResponse{
         
         $dataClient = $repository->find($id);
         if($dataClient === null){
@@ -128,6 +143,14 @@ class ClientController extends AbstractController
         }
 
         $updatedQuestion = $serializer->deserialize($request->getContent(),DataClient::class,"json",[AbstractNormalizer::OBJECT_TO_POPULATE => $dataClient]);
+        $errors = $validator->validate($updatedQuestion);
+        if($errors->count() > 0){
+            return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [],true);
+        }
+        $date = new \DateTime();            
+        $updatedQuestion->setCreatedAt($updatedQuestion->getCreatedAt());
+        $updatedQuestion->setUpdatedAt($date); 
+
         $updatedQuestion->setStatus('on');
         $entity->persist($updatedQuestion);
         $entity->flush();
@@ -154,14 +177,22 @@ class ClientController extends AbstractController
         $clientBool = $client->getStatus();
         $requestClient = $requestClientRepository->findByClient($id);
         for($i = 0; $i < count($requestClient); $i++){
-            $test = $requestClientRepository->find($requestClient[$i]);
-            if($clientBool == "off") { 
+            $requeststatus = $requestClientRepository->find($requestClient[$i]);
+            if($clientBool == "off") {
+                $date = new \DateTime();            
+                $client->setCreatedAt($client->getCreatedAt());
+                $client->setUpdatedAt($date); 
+         
                 $client->setStatus('on');
-                $test->setStatus('on');
+                $requeststatus->setStatus('on');
             }
-            else{ 
+            else{
+                $date = new \DateTime();            
+                $client->setCreatedAt($client->getCreatedAt());
+                $client->setUpdatedAt($date); 
+         
                 $client->setStatus('off');
-                $test->setStatus('off');
+                $requeststatus->setStatus('off');
             }
         }
        
@@ -169,7 +200,7 @@ class ClientController extends AbstractController
 
 
         $entity->persist($client);
-        $entity->persist($test);
+        $entity->persist($requeststatus);
         $entity->flush();
 
         $clientBool = $client->getStatus();

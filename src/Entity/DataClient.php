@@ -8,9 +8,14 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\DataClientRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: DataClientRepository::class)]
+/**
+* @UniqueEntity(fields={"login", "password", "databaseclient"}, message="Cette combinaison existe déjà.")
+*/
 class DataClient implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -19,34 +24,44 @@ class DataClient implements PasswordAuthenticatedUserInterface
     #[Groups(["getClient"])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique:true)]
     #[Groups(["getClient"])]
+    #[Assert\NotBlank(message: "Un login ne peut être null")]
+    #[Assert\NotNull(message: "Un login ne peut être null")]
     private ?string $login = null;
 
     /**
       * @var string The hashed password
       */
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,unique:true)]
     #[Groups(["getClient"])]
+    #[Assert\NotBlank(message: "Un password ne peut être null")]
+    #[Assert\NotNull(message: "Un password ne peut être null")]
     private ?string $password = null;
 
     #[ORM\Column]
     #[Groups(["getClient"])]
+    #[Assert\NotBlank(message: "Un port ne peut être null")]
+    #[Assert\NotNull(message: "Un port ne peut être null")]
     private ?int $port = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["getClient"])]
+    #[Assert\NotBlank(message: "Un ip ne peut être null")]
+    #[Assert\NotNull(message: "Un ip ne peut être null")]
     private ?string $ip = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(["getClient"])]
     private ?string $TTL = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,unique:true)]
     #[Groups(["getClient"])]
+    #[Assert\NotBlank(message: "Un database ne peut être null")]
+    #[Assert\NotNull(message: "Un database ne peut être null")]
     private ?string $databaseclient = null;
 
-      /**
+    /**
      * @var Collection<RequestClient>
      */
 
@@ -56,6 +71,12 @@ class DataClient implements PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 24)]
     #[Groups(["getClient"])]
     private ?string $status = 'on';
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $createdAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $updatedAt = null;
 
     public function __construct()
     {
@@ -145,12 +166,6 @@ class DataClient implements PasswordAuthenticatedUserInterface
         return $this->requestClient;
     }
 
-    // public function setRequestClient(?RequestClient $requestClient): static
-    // {
-    //     $this->requestClient = $requestClient;
-
-    //     return $this;
-    // }
     public function setRequestClient(Collection $requestClient): static
 {
     $this->requestClient = $requestClient;
@@ -167,6 +182,30 @@ class DataClient implements PasswordAuthenticatedUserInterface
     public function setDatabaseclient(string $databaseclient): static
     {
         $this->databaseclient = $databaseclient;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

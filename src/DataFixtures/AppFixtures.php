@@ -106,6 +106,8 @@ private Generator $faker;
             $client->setIp($this->faker->numberBetween(0 ,255). "." . $this->faker->numberBetween(0 ,255). "." . $this->faker->numberBetween(0 ,255) . "." . $this->faker->numberBetween(0 ,255));
             $client->setTTL($this->faker->optional(0.5)->numberBetween(1 ,255));
             $client->setDatabaseclient($this->faker->regexify('[a-zA]{' . $this->faker->numberBetween(1, 10) . '}'));
+            $created = $this->faker->dateTimeBetween('-1 week', 'now');
+            $client->setCreatedAt($created)->setUpdatedAt($created);
             $client->setStatus('on');
             
             $manager->persist($client);   
@@ -120,6 +122,8 @@ private Generator $faker;
        $client->setPort(3306);
        $client->setIp("localhost");
        $client->setDatabaseclient("bddhotline");
+       $created = $this->faker->dateTimeBetween('-1 week', 'now');
+       $client->setCreatedAt($created)->setUpdatedAt($created);
        $client->setStatus('on');
 
        $manager->persist($client);
