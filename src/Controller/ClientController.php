@@ -25,9 +25,7 @@ class ClientController extends AbstractController
 
     /**
     * Page de test clientcontroller
-    * @OA\Parameter(name="", in="", description="return un message ", required=true))
-    * @OA\Response(response=200, description="",
-    * )
+    * @OA\Response(response=200, description="")
     * @OA\Tag(name="TEST")
     */
     #[Route('/clientcontroller', name: 'app_client')]
@@ -40,32 +38,32 @@ class ClientController extends AbstractController
     }
     
     /** 
-    * Cette method enregistre une connexion data d'un client, il renvoie sont ID.
-    * @OA\Parameter(name="login", in="header", description="Login du CLient", required=true, @OA\Schema(type="string"))
-    * @OA\Parameter(name="password", in="header", description="Password du CLient (Enregistrer en claire)", required=true, @OA\Schema(type="string"))
+    * Cette method enregistre une connexion data d'un client
+    * @OA\Parameter(name="login", in="header", description="Login du Client", required=true, @OA\Schema(type="string"))
+    * @OA\Parameter(name="password", in="header", description="Password du CLient (Enregistrer en clair)", required=true, @OA\Schema(type="string"))
     * @OA\Parameter(name="port", in="header", description="Port du client", required=true, @OA\Schema(type="integer"))
     * @OA\Parameter(name="ip", in="header", description="Ip du Client", required=true, @OA\Schema(type="string"))
-    * @OA\Parameter(name="ttl", in="header", description="TTL si il y en a un", @OA\Schema(type="integer"))
+    * @OA\Parameter(name="ttl", in="header", description="TTL s'il y en a un", @OA\Schema(type="integer"))
     * @OA\Parameter(name="databaseclient", in="header", description="Nom de la database du Client", required=true, @OA\Schema(type="string"))
     * @OA\RequestBody(
     *      description="Example request body",
     *      required=true,
     *      @OA\JsonContent(
     *          type="object",
-    *          @OA\Property(property="login", type="string", description="test"),
-    *          @OA\Property(property="password", type="string", description="Description for property2"),
-    *          @OA\Property(property="port", type="integer", description="Description for property2"),
-    *          @OA\Property(property="ip", type="string", description="Description for property2"),
-    *          @OA\Property(property="ttl", type="integer", description="Description for property3"),
-    *          @OA\Property(property="databaseclient", type="string", description="Description for property3"))
+    *          @OA\Property(property="login", type="string"),
+    *          @OA\Property(property="password", type="string"),
+    *          @OA\Property(property="port", type="integer"),
+    *          @OA\Property(property="ip", type="string"),
+    *          @OA\Property(property="ttl", type="integer"),
+    *          @OA\Property(property="databaseclient", type="string"))
     *      )
     * )
     * @OA\Response(response=201, description="La connexion du client à comme id: +ID du nouveau client")
     * @OA\Response(response=500, description="JSON MESSAGE Access denied for user +detail")
-    * @OA\Response(response=400, description="VALIDATOR DETAIL [combinaison existe déjà, element ne peut être null]")
+    * @OA\Response(response=400, description="VALIDATOR DETAIL [combinaison existe déjà||element ne peut être null]")
     * @OA\Tag(name="CLIENT")
     */
-    #[Route('/api/createclient', name:'sql.createclient', methods:["POST"])]
+    #[Route('/api/createclient', name:'createclient.client', methods:["POST"])]
     public function CreateConnexionClientsql(Request $request, SerializerInterface $serializer, EntityManagerInterface $entity,ValidatorInterface $validator): JsonResponse
     {
         
@@ -120,23 +118,36 @@ class ClientController extends AbstractController
         return new JsonResponse($client, JsonResponse::HTTP_CREATED);
     }
     /**
-    * Cette method permet de changer les information de connexion d'un client <!> Pas de test de connexion ni une mise a jour de request
+    * Cette method permet de changer les informations de connexion d'un client <!> Pas de test de connexion ni une mises à jour de request
     * @OA\Parameter(name="Client_id", in="path", required=true, description="Id du client", @OA\Schema(type="integer"))
     * @OA\Parameter(name="login", in="header", description="Login du CLient", @OA\Schema(type="string"))
-    * @OA\Parameter(name="password", in="header", description="Password du CLient (Enregistrer en claire)", @OA\Schema(type="string"))
+    * @OA\Parameter(name="password", in="header", description="Password du CLient (Enregistrer en clair)", @OA\Schema(type="string"))
     * @OA\Parameter(name="port", in="header", description="Port du client", @OA\Schema(type="integer"))
     * @OA\Parameter(name="ip", in="header", description="Ip du Client", @OA\Schema(type="string"))
-    * @OA\Parameter(name="ttl", in="header", description="TTL si il y en a un", @OA\Schema(type="integer"))
+    * @OA\Parameter(name="ttl", in="header", description="TTL s'il y en a un", @OA\Schema(type="integer"))
     * @OA\Parameter(name="databaseclient", in="header", description="Nom de la database du Client", @OA\Schema(type="string"))
+    * @OA\RequestBody(
+    *      description="Example request body",
+    *      required=true,
+    *      @OA\JsonContent(
+    *          type="object",
+    *          @OA\Property(property="login", type="string"),
+    *          @OA\Property(property="password", type="string"),
+    *          @OA\Property(property="port", type="integer"),
+    *          @OA\Property(property="ip", type="string"),
+    *          @OA\Property(property="ttl", type="integer"),
+    *          @OA\Property(property="databaseclient", type="string"))
+    *      )
+    * )
     * @OA\Response(response=200, description="JSON MESSAGE new information OK")
     * @OA\Response(response=404, description="JSON ERROR ID not found")
-    * @OA\Response(response=400, description="VALIDATOR DETAIL [combinaison existe déjà, element ne peut être null]")
+    * @OA\Response(response=400, description="VALIDATOR DETAIL [combinaison existe déjà||element ne peut être null]")
     * @OA\Tag(name="CLIENT")
     */ 
-    #[Route('/api/client/{id}', name:"updateClient.sql", methods:["PUT"])]
-    public function updateClient(int $id,DataClientRepository $repository, Request $request, SerializerInterface $serializer, EntityManagerInterface $entity,ValidatorInterface $validator): JsonResponse{
+    #[Route('/api/client/{Client_id}', name:"updateClient.client", methods:["PUT"])]
+    public function updateClient(int $Client_id,DataClientRepository $repository, Request $request, SerializerInterface $serializer, EntityManagerInterface $entity,ValidatorInterface $validator): JsonResponse{
         
-        $dataClient = $repository->find($id);
+        $dataClient = $repository->find($Client_id);
         if($dataClient === null){
             $stringMessage = ['ERROR' => 'ID not found'];
             return new JsonResponse($stringMessage, JsonResponse::HTTP_NOT_FOUND);
@@ -158,16 +169,16 @@ class ClientController extends AbstractController
         return new JsonResponse($stringMessage, JsonResponse::HTTP_OK);
     }
     /**
-    * Cette method permet de changer le status du CLient et de Request <!> On ou off
-    * @OA\Parameter(name="Client_ID",in="path", description="Id du client", required=true, @OA\Schema(type="integer"))
+    * Cette method permet de changer le status du Client et de Request <!> On ou off
+    * @OA\Parameter(name="Client_id",in="path", description="Id du client", required=true, @OA\Schema(type="integer"))
     * @OA\Response(response=200, description="JSON MESSAGE new information OK VALUE $status",)
     * @OA\Response(response=404, description="JSON ERROR ID not found",)
     * @OA\Tag(name="CLIENT")
     */ 
-    #[Route('/api/client/softdeleteClient/{id}', name:"softdeleteClient.sql", methods: ["DELETE"])]
-    public function softdeleteClient(int $id, DataClientRepository $repository, RequestClientRepository $requestClientRepository, EntityManagerInterface $entity)
+    #[Route('/api/client/softdeleteClient/{Client_id}', name:"softdeleteClient.client", methods: ["DELETE"])]
+    public function softdeleteClient(int $Client_id, DataClientRepository $repository, RequestClientRepository $requestClientRepository, EntityManagerInterface $entity)
     {
-        $client = $repository->find($id);
+        $client = $repository->find($Client_id);
 
         if($client === null){
             $stringMessage = ['ERROR' => 'ID not found'];
@@ -175,7 +186,7 @@ class ClientController extends AbstractController
         }
 
         $clientBool = $client->getStatus();
-        $requestClient = $requestClientRepository->findByClient($id);
+        $requestClient = $requestClientRepository->findByClient($Client_id);
         for($i = 0; $i < count($requestClient); $i++){
             $requeststatus = $requestClientRepository->find($requestClient[$i]);
             if($clientBool == "off") {
@@ -196,9 +207,6 @@ class ClientController extends AbstractController
             }
         }
        
-
-
-
         $entity->persist($client);
         $entity->persist($requeststatus);
         $entity->flush();
@@ -210,15 +218,15 @@ class ClientController extends AbstractController
         return new JsonResponse($stringMessage , JsonResponse::HTTP_OK);
     }
     /**
-    * Cette method permet de delete elle afecte les information de connexion d'un client ainsi que ses informations requets
-    * @OA\Parameter(name="Client_ID",in="path", description="Id du client", required=true, @OA\Schema(type="integer"))
+    * Cette method permet de delete elle affecte les informations de connexion d'un client ainsi que ses informations requets
+    * @OA\Parameter(name="Client_id",in="path", description="Id du client", required=true, @OA\Schema(type="integer"))
     * @OA\Response(response=200, description="JSON MESSAGE delete OK")
     * @OA\Response(response=404, description="JSON ERROR ID not found" )
     * @OA\Tag(name="CLIENT")
     */ 
-    #[Route('/api/client/deleteClient/{id}', name:"deleteClient.sql", methods: ["DELETE"])]
-    public function deleteClient(int $id, DataClientRepository $repository, EntityManagerInterface $entity){
-        $client = $repository->find($id);
+    #[Route('/api/client/deleteClient/{Client_id}', name:"deleteClient.client", methods: ["DELETE"])]
+    public function deleteClient(int $Client_id, DataClientRepository $repository, EntityManagerInterface $entity){
+        $client = $repository->find($Client_id);
         if($client === null){
             $stringMessage = ['ERROR' => 'ID not found'];
             return new JsonResponse($stringMessage, JsonResponse::HTTP_NOT_FOUND);
@@ -232,21 +240,24 @@ class ClientController extends AbstractController
         return new JsonResponse($stringMessage, JsonResponse::HTTP_OK);
 }
    
-    
-
 /**
     * Cette method retourne les informations d'un client à l'aide de sont id 
-    * @OA\Parameter(name="CLIENT_ID",in="path", description="Id du client", required=true, @OA\Schema(type="integer"))
+    * @OA\Parameter(name="Client_id",in="path", description="Id du client", required=true, @OA\Schema(type="integer"))
     * @OA\Response(response=200, description="Return les informations du client")
+    * @OA\Response(response=400, description="JSON MESSAGE Client softdelete ")
     * @OA\Response(response=404, description="JSON ERROR ID not found" )
     * @OA\Tag(name="CLIENT")
     */    
-    #[Route('/api/client/{id}', name:"getclient.sql", methods:["GET"])]
-    public function getClient(int $id, DataClientRepository $repository, SerializerInterface $serializer): JsonResponse{
-        $client = $repository->find($id);
+    #[Route('/api/client/{Client_id}', name:"getclient.client", methods:["GET"])]
+    public function getClient(int $Client_id, DataClientRepository $repository, SerializerInterface $serializer): JsonResponse{
+        $client = $repository->find($Client_id);
         if($client === null){
             $stringMessage = ['ERROR' => 'ID not found'];
             return new JsonResponse($stringMessage, JsonResponse::HTTP_NOT_FOUND);
+        }
+        if($client->getStatus() == 'off'){
+            $stringMessage = ['MESSAGE' => 'Client softdelete'];
+            return new JsonResponse($stringMessage, JsonResponse::HTTP_BAD_REQUEST);
         }
         $jsonClient = $serializer->serialize($client, 'json', ['groups' => "getClient"]);
         return new JsonResponse($jsonClient, JsonResponse::HTTP_OK, [], true);

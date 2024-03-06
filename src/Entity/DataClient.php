@@ -21,11 +21,11 @@ class DataClient implements PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["getClient"])]
+    #[Groups(["getClient", "getALLClient"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique:true)]
-    #[Groups(["getClient"])]
+    #[Groups(["getClient", "getALLClient"])]
     #[Assert\NotBlank(message: "Un login ne peut être null")]
     #[Assert\NotNull(message: "Un login ne peut être null")]
     private ?string $login = null;
@@ -34,29 +34,29 @@ class DataClient implements PasswordAuthenticatedUserInterface
       * @var string The hashed password
       */
     #[ORM\Column(length: 255,unique:true)]
-    #[Groups(["getClient"])]
+    #[Groups(["getClient", "getALLClient"])]
     #[Assert\NotBlank(message: "Un password ne peut être null")]
     #[Assert\NotNull(message: "Un password ne peut être null")]
     private ?string $password = null;
 
     #[ORM\Column]
-    #[Groups(["getClient"])]
+    #[Groups(["getClient", "getALLClient"])]
     #[Assert\NotBlank(message: "Un port ne peut être null")]
     #[Assert\NotNull(message: "Un port ne peut être null")]
     private ?int $port = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["getClient"])]
+    #[Groups(["getClient", "getALLClient"])]
     #[Assert\NotBlank(message: "Un ip ne peut être null")]
     #[Assert\NotNull(message: "Un ip ne peut être null")]
     private ?string $ip = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["getClient"])]
+    #[Groups(["getClient", "getALLClient"])]
     private ?string $TTL = null;
 
     #[ORM\Column(length: 255,unique:true)]
-    #[Groups(["getClient"])]
+    #[Groups(["getClient", "getALLClient"])]
     #[Assert\NotBlank(message: "Un database ne peut être null")]
     #[Assert\NotNull(message: "Un database ne peut être null")]
     private ?string $databaseclient = null;

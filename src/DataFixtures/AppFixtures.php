@@ -38,7 +38,7 @@ private Generator $faker;
     { 
       printf("\nFixtures> ");
       
-      printf("\n USER");
+      printf("\nUSER PUBLIC >");
               //Public
               $publicUser = new User();
               $password = $this->faker->password(2,6);
@@ -50,7 +50,7 @@ private Generator $faker;
               $manager->persist($publicUser);
       
               for ($i = 0; $i < 10; $i++) {
-      
+                printf("\nUSER $i>");
                   $userUser = new User();
                   $password = $this->faker->password(2,6);
                   $userUser
@@ -61,7 +61,7 @@ private Generator $faker;
                   $manager->persist($userUser);
       
               }
-      
+              printf("\nUSER ADMIN >");
               $adminUser = new User();
               $adminUser
               ->setUsername("admin")

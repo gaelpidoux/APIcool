@@ -22,9 +22,7 @@ class SQLController extends AbstractController
     
     /**
     * Page de test SQLController
-    * @OA\Parameter(name="", in="", description="return un message ", required=true))
-    * @OA\Response(response=200, description="",
-    * )
+    * @OA\Response(response=200, description="")
     * @OA\Tag(name="TEST")
     */
     #[Route('/sqlcontroller', name: 'app_sql')]
@@ -37,14 +35,24 @@ class SQLController extends AbstractController
     }
     /**
     * Cette method retourne les valeurs par type et par Id client <!> Pas obliger de mettre un nom entier
-    * @OA\Parameter(name="CLIENT_ID", in="header", description="Id du client", required=true, @OA\Schema(type="integer"))
+    * @OA\Parameter(name="CLIENT_ID", in="header", description="ID du client <!> DU CLIENT <!>", required=true, @OA\Schema(type="integer"))
     * @OA\Parameter(name="TYPE", in="header", description="type de la verif", required=true, @OA\Schema(type="string"))
-    * @OA\Response(response=200, description="JSON MESSAGE Return type: value: status: statsId: statsNaming:")
-    * @OA\Response(response=404, description="JSON ERROR ID|type|StatsRequestClient not found" )
+    * @OA\RequestBody(
+    *      description="Example request body",
+    *      required=true,
+    *      @OA\JsonContent(
+    *          type="object",
+    *          @OA\Property(property="CLIENT_ID", type="integer"),
+    *          @OA\Property(property="TYPE", type="string"),
+    *      )
+    * )
+    * @OA\Response(response=200, description="Return type: value: status: statsId: statsNaming:")
+    * @OA\Response(response=400, description="JSON MESSAGE Client softdelete") 
+    * @OA\Response(response=404, description="JSON ERROR ID||type||StatsRequestClient not found" )
     * @OA\Tag(name="REQUEST")
     */
     #[Route('/api/request', name: 'getRequestClientType.sql', methods: ['POST'])]
-    public function getRequestClientType(Request $request, RequestClientRepository $requestRepository, StatsRequestClientRepository $statsRequestClientRepository, SerializerInterface $serializer, EntityManagerInterface $entity): JsonResponse
+    public function getRequestClientType(Request $request, RequestClientRepository $requestRepository, DataClientRepository $dataClientRepository, StatsRequestClientRepository $statsRequestClientRepository, SerializerInterface $serializer, EntityManagerInterface $entity): JsonResponse
     {
         $requestData = json_decode($request->getContent(), true);
         $clientId = $requestData['Client_id'];
@@ -53,11 +61,20 @@ class SQLController extends AbstractController
         if(!$clientId){
             $stringMessage = [
                 'ERROR' => "ID not found"];
-                return new JsonResponse($stringMessage, JsonResponse::HTTP_NOT_FOUND); }
-        if(!$type){
-        $stringMessage = [
-            'ERROR' => "Type not found"];
             return new JsonResponse($stringMessage, JsonResponse::HTTP_NOT_FOUND); }
+
+        if(!$type){
+            $stringMessage = [
+                'ERROR' => "Type not found"];
+            return new JsonResponse($stringMessage, JsonResponse::HTTP_NOT_FOUND); }
+
+        $client = $dataClientRepository->find($clientId);
+
+            if($client->getStatus() == 'off'){
+                $stringMessage = [
+                    'MESSAGE' => 'Client softdelete'];
+                return new JsonResponse($stringMessage, JsonResponse::HTTP_BAD_REQUEST);
+            }
                 
     
         $clientRequests = $requestRepository->findByType($clientId, $type);
@@ -87,42 +104,50 @@ class SQLController extends AbstractController
     }
     /**
     * Cette method retourne les informations d'une request à l'aide de sont id 
-    * @OA\Parameter(name="Request_ID",in="path", description="Id de la request", required=true, @OA\Schema(type="integer"))
-    * @OA\Response(response=200, description="JSON MESSAGE request")
+    * @OA\Parameter(name="Client_id",in="path", description="ID du client <!> DU CLIENT <!>", required=true, @OA\Schema(type="integer"))
+    * @OA\Response(response=200, description="JSON MESSAGE Client softdelete || request")
     * @OA\Response(response=404, description="JSON ERROR Client|No REQUEST")
     * @OA\Tag(name="REQUEST")
     */ 
-    #[Route('/api/request/{id}', name:"getRequestClient.sql", methods:["GET"])]
-    public function getRequestClient(int $id,DataClientRepository $dataClientRepository, SerializerInterface $serializer): JsonResponse{
+    #[Route('/api/request/{Client_id}', name:"getRequestClient.sql", methods:["GET"])]
+    public function getRequestClient(int $Client_id,DataClientRepository $dataClientRepository, SerializerInterface $serializer): JsonResponse{
     
-        $client = $dataClientRepository->find($id);
+        $client = $dataClientRepository->find($Client_id);
         if (!$client) {
             $stringMessage = [
                 'ERROR' => 'Client not found'];
             return new JsonResponse($stringMessage, JsonResponse::HTTP_NOT_FOUND);
         }
+
         $clientRequests = $client->getRequestClient();
+
         if (!$clientRequests) {
             $stringMessage = [
                 'ERROR' => 'NO REQUEST'];
             return new JsonResponse($stringMessage, JsonResponse::HTTP_NOT_FOUND);
         }
+        
+        if($client->getStatus() == 'off'){
+            $stringMessage = ['MESSAGE' => 'Client softdelete'];
+            return new JsonResponse($stringMessage, JsonResponse::HTTP_NOT_FOUND);
+        }
+
         $jsonClientRequests = $serializer->serialize($clientRequests, 'json', ['groups' => 'getrequest']);
         $stringMessage = [
             'MESSAGE' => $jsonClientRequests];
         return new JsonResponse(json_encode($stringMessage), JsonResponse::HTTP_OK, [], true);
     }
    /**
-    * Cette method retourne les informations d'une stats à l'aide de sont id 
-    * @OA\Parameter(name="Stats_ID",in="path", description="Id de la stats", required=true, @OA\Schema(type="integer"))
+    * Cette method retourne les informations d'une stat à l'aide de sont id 
+    * @OA\Parameter(name="Stats_ID",in="path", description="Id de la stats <!> http://localhost:8000/api/request retourne id stats par type <!>", required=true, @OA\Schema(type="integer"))
     * @OA\Response(response=200, description="JSON MESSAGE info stats")
     * @OA\Response(response=404, description="JSON ERROR ID_Stats not found")
     * @OA\Tag(name="Stats")
     */ 
-    #[Route('/api/stats/{id}', name:"getStats.sql", methods:["GET"])]
+    #[Route('/api/stats/{Stats_ID}', name:"getStats.sql", methods:["GET"])]
     #[IsGranted("ROLE_ADMIN", statusCode: 423)]
-    public function getStats(int $id, StatsRequestClientRepository $repository, SerializerInterface $serializer): JsonResponse{
-        $client = $repository->find($id);
+    public function getStats(int $Stats_ID, StatsRequestClientRepository $repository, SerializerInterface $serializer): JsonResponse{
+        $client = $repository->find($Stats_ID);
         if (!$client) {
             $stringMessage = [
                 'ERROR' => 'ID_Stats not found'];
@@ -135,20 +160,21 @@ class SQLController extends AbstractController
     } 
     
     /**
-    * Cette method retourne toute les data connexion
+    * Cette method retourne toutes les data connexion <!> Mise en cache <!>
     * @OA\Response(response=200, description="ALL data connexion")
     * @OA\Tag(name="ALL")
     */ 
     #[Route('/api/client', name:"getAllClient.sql", methods: ["GET"])]
-    public function getAllClient(DataClientRepository $repository, TagAwareCacheInterface $cache, SerializerInterface $serializer){
-        $idCacheGetAllClient = "getAllClient";
-        $jsonStats = $cache->get($idCacheGetAllClient, function (ItemInterface $item) use ($repository, $serializer)
+    public function getAllClient(DataClientRepository $repository, TagAwareCacheInterface $cache, SerializerInterface $serializer)
     {
-        $item->tag("clientCache");
-        $client = $repository->findBy(['status' => 'on']);        
-            return $serializer->serialize($client, 'json', ['groups' => "getClient"]);
-    });
-        return new JsonResponse($jsonStats, JsonResponse::HTTP_OK, [], true);
-    }
+        $idCacheGetAllClient = "getAllClient";
 
-   }
+        $clientList = $cache->get($idCacheGetAllClient, function (ItemInterface $item) use ($repository, $serializer) {
+            $item->tag("clientCache");
+            $clientList = $repository->findBy(['status' => 'on']);
+            return $serializer->serialize($clientList, 'json', ['groups' => "getClient"]);
+        });
+
+        return new JsonResponse($clientList, JsonResponse::HTTP_OK, [], true);
+    }
+}

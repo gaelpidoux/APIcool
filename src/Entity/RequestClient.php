@@ -20,21 +20,21 @@ class RequestClient
     private ?DataClient $client = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["getrequest","getTOUT"])]
+    #[Groups(["getrequest","getTOUT", "getALLClient"])]
 
     private ?string $type = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["getrequest","getTOUT"])]
+    #[Groups(["getrequest","getTOUT", "getALLClient"])]
     private ?string $tabledata = null;
 
     #[ORM\Column(length: 24)]
-    #[Groups(["getrequest","getTOUT"])]
+    #[Groups(["getrequest","getTOUT", "getALLClient"])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'request', fetch: 'EAGER',cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["getTOUT"])]
+    #[Groups(["getTOUT", "getALLClient"])]
     private ?StatsRequestClient $statsRequestClient = null;
 
     public function getId(): ?int

@@ -5,7 +5,20 @@ nelmio_api_doc:
         description: API over HTTP
     info:
       title: APIcool 
-      description: APIcool est une api qui sera en lien avec d'autre outil interne à l'entreprise SAVOYE, sont objectif est de retourner des valeurs de l'outil LMD depuis une BDD, elle sera combiner avec une application mobile et un grafana.
+      description: >
+        APIcool est une API qui sera en lien avec d'autres outils internes à l'entreprise SAVOYE.
+        Son objectif est de retourner des valeurs d'outil tel que LMD depuis une BDD.
+        Elle sera combinée avec une application mobile et un Grafana.
+
+
+        Pour cette partie, deux points sont importants :
+
+        1. L'API ne stockera pas les connexions client, c'est pourquoi je ne me suis pas embêté
+           à encoder les mots de passe de dataclient (pour les utilisateurs, par contre, oui).
+        2. La partie métier est simplifiée à 1% de ce que je retrouve en réalité. Cela peut donner
+           l'impression que l'API est simpliste, mais j'ai regroupé exprès les vérifications contenues
+           dans la table devclientprincipalverif des données très simples pour des tests.
+        Voilà voilà, enjoy!
       version: 1.0.0
     paths:
       /api/login_check:
@@ -44,7 +57,6 @@ nelmio_api_doc:
                       refresh_token:
                         type: string
                         example: "67abf20ff7833531980b380f08b7e44876857376dd6256d..."
-                        paths:
       /api/token/refresh?refresh_token:
         get:
           operationId: refreshCredentialsItem
@@ -88,8 +100,8 @@ nelmio_api_doc:
           type: http
           scheme: bearer
           bearerFormat: JWT
-    security:
-      - Bearer: []
+      security:
+        - Bearer: []
   areas:
     path_patterns:
       - ^/api(?!/doc$)

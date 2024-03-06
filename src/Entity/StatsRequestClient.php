@@ -20,11 +20,11 @@ class StatsRequestClient
     private Collection $request;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(["getStats"])]
+    #[Groups(["getStats", "getALLClient"])]
     private ?int $naming = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["getStats"])]
+    #[Groups(["getStats", "getALLClient"])]
     private ?string $statsnaming = null;
 
     public function __construct()
