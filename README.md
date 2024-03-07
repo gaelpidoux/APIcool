@@ -10,6 +10,8 @@ Commandes à réaliser : ```composer install ``` ```composer update``` ```php bi
 Modifier .env les ChangeMe
 Certifica dans le repo JWT_PASSPHRASE=b39b1984e86dca3a380b4dda80e6d1d9
 
+User à utiliser: admin password
+
 PS: Pour cette partie, quatre points sont importants :
 
     L'API ne stockera pas les connexions client, c'est pourquoi je ne me suis pas embêté à encoder les mots de passe de dataclient (car là c'est du test) (pour les utilisateurs, par contre, oui).
