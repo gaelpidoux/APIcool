@@ -5,7 +5,7 @@ Pour la partie vizualisation elle sera combinée avec une application mobile et 
 Pour utiliser l'API, il vous faudra vous connecter à l'aide d'un compte les identifiants sont dans l'exemple de la doc.
 Pour accéder à la documentation de l'API : http://localhost:8000/api/doc
 
-Commandes à réaliser : composer update php bin/console doctrine:database:create php bin/console doctrine:schema:update --force php bin/console doctrine:fixtures:load
+Commandes à réaliser : ```composer update php bin/console doctrine:database:create php bin/console doctrine:schema:update --force php bin/console doctrine:fixtures:load```
 
 PS: Pour cette partie, quatre points sont importants :
 
