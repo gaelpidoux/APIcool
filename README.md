@@ -7,6 +7,9 @@ Pour accéder à la documentation de l'API : http://localhost:8000/api/doc
 
 Commandes à réaliser : ```composer install ``` ```composer update``` ```php bin/console doctrine:database:create``` ```php bin/console doctrine:schema:update``` ```php bin/console doctrine:fixtures:load```
 
+Modifier .env les ChangeMe
+Certifica dans le repo JWT_PASSPHRASE=b39b1984e86dca3a380b4dda80e6d1d9
+
 PS: Pour cette partie, quatre points sont importants :
 
     L'API ne stockera pas les connexions client, c'est pourquoi je ne me suis pas embêté à encoder les mots de passe de dataclient (car là c'est du test) (pour les utilisateurs, par contre, oui).
